@@ -14,7 +14,7 @@ void setup ()
 {
   Serial.begin(9600); // 시리얼 시작
   Serial1.begin(9600); // 블루투스 시작
-  for(int i = 24; i < 54; i++){
+  for(int i = 23; i < 54; i++){
     pinMode(i,OUTPUT); 
   } // 릴레이 포트 지정( 솔레노이드 동작 핀 )
 }
@@ -29,9 +29,9 @@ void loop ()
   }
   
   if(oneStart){ // 오르골 연주 시작
-    
+    digitalWrite(23,HIGH); // 모터 동작
     previousTime = millis(); // 시작 시간 나중에 시간을 계속 가져옴
-    
+
     for(int readPoint = 0;readPoint < moveString.length(); readPoint++ ){  // 문자열 읽기  
       
       
@@ -61,7 +61,7 @@ void loop ()
           previousTime = currentTime;
           
           break;
-          
+           
          }
          
         }
@@ -74,7 +74,7 @@ void loop ()
       
     }
 
-    
+    digitalWrite(23,LOW); // 모터 멈춤
     oneStart = false; // 다시 값 받을 준비
     moveString = ""; // 문자열 초기화
     tempoGet = true;
