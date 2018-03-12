@@ -19,11 +19,17 @@ void setup ()
   Serial1.begin(9600); // 블루투스 시작
   for(int i = 23; i < 54; i++){
     pinMode(i,OUTPUT); 
+    digitalWrite(i,HIGH);
   } // 릴레이 포트 지정( 솔레노이드 동작 핀 )
 }
 
 void loop ()
 {
+  if(Serial.available()){
+    Serial1.write(Serial.read());
+    Serial.write(Serial.read());
+    
+  }
   
   if(Serial1.available()){ // 블루투스 값 있을시
     
@@ -34,7 +40,7 @@ void loop ()
     
     for(int deletePoint = 0; deletePoint < previousChars.length(); deletePoint++){
       
-          if(CharsCreatedTime[(int)previousChars[deletePoint]] + 1000 <= millis() ){
+          if(CharsCreatedTime[(int)previousChars[deletePoint]] + 50 <= millis() ){
             
             stopSolenoidByChar((int)previousChars[deletePoint]);
             CharsCreatedTime[(int)previousChars[deletePoint]] = 0;
@@ -47,7 +53,7 @@ void loop ()
 
   if(oneStart){ // 오르골 연주 시작
     
-    digitalWrite(23,HIGH); // 모터 동작
+    digitalWrite(23,LOW); // 모터 동작
     previousChars ="";
     previousTime = millis(); // 시작 시간 나중에 시간을 계속 가져옴
 
@@ -93,7 +99,7 @@ void loop ()
       
     }
 
-    digitalWrite(23,LOW); // 모터 멈춤   
+    digitalWrite(23,HIGH); // 모터 멈춤   
     oneStart = false; // 다시 값 받을 준비 
     moveString = ""; // 문자열 초기화
     tempoGet = true;
@@ -109,32 +115,6 @@ void moveSolenoidByChar(int num){
   previousChars += (char)num; // 초기화를 위한 변수에 넣어줌
   
         switch(num){
-    case 65: digitalWrite(24,HIGH);
-    break;
-    case 67: digitalWrite(25,HIGH);
-    break;
-    case 72: digitalWrite(26,HIGH);
-    break;
-    case 74: digitalWrite(27,HIGH);
-    break;
-    case 76: digitalWrite(28,HIGH);
-    break;
-    case 77: digitalWrite(29,HIGH);
-    break;
-    case 79: digitalWrite(30,HIGH);
-    break;
-    case 103: digitalWrite(52,HIGH);
-    break;
-    case 105: digitalWrite(53,HIGH);
-    break;
-    default: digitalWrite(num-50,HIGH);
-    break;
-  }
-  
-}
-void stopSolenoidByChar(int num){
-  
-   switch(num){
     case 65: digitalWrite(24,LOW);
     break;
     case 67: digitalWrite(25,LOW);
@@ -158,6 +138,32 @@ void stopSolenoidByChar(int num){
   }
   
 }
+void stopSolenoidByChar(int num){
+  
+   switch(num){
+    case 65: digitalWrite(24,HIGH);
+    break;
+    case 67: digitalWrite(25,HIGH);
+    break;
+    case 72: digitalWrite(26,HIGH);
+    break;
+    case 74: digitalWrite(27,HIGH);
+    break;
+    case 76: digitalWrite(28,HIGH);
+    break;
+    case 77: digitalWrite(29,HIGH);
+    break;
+    case 79: digitalWrite(30,HIGH);
+    break;
+    case 103: digitalWrite(52,HIGH);
+    break;
+    case 105: digitalWrite(53,HIGH);
+    break;
+    default: digitalWrite(num-50,HIGH);
+    break;
+  }
+  
+}
 
 
 void BTRate(){
@@ -168,7 +174,7 @@ void BTRate(){
   if(data == '('){
     
     realTimePlay = true;
-    digitalWrite(23,HIGH); // 모터 동작
+    digitalWrite(23,LOW); // 모터 동작
 
     
   }
@@ -188,7 +194,7 @@ void BTRate(){
     }else{
       
       
-        if(tempoGet){ // 템포를 받ㅇ므
+        if(tempoGet){ // 템포를 받음
                 
           if(data == ';'){
                         
@@ -228,7 +234,7 @@ void BTRate(){
     if(data == ')'){
     
     realTimePlay = false;
-    digitalWrite(23,LOW); // 모터 멈추기
+    digitalWrite(23,HIGH); // 모터 멈추기
     
   }
 
