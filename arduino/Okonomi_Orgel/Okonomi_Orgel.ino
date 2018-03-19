@@ -25,11 +25,6 @@ void setup ()
 
 void loop ()
 {
-  if(Serial.available()){
-    Serial1.write(Serial.read());
-    Serial.write(Serial.read());
-    
-  }
   
   if(Serial1.available()){ // 블루투스 값 있을시
     
@@ -40,7 +35,7 @@ void loop ()
     
     for(int deletePoint = 0; deletePoint < previousChars.length(); deletePoint++){
       
-          if(CharsCreatedTime[(int)previousChars[deletePoint]] + 50 <= millis() ){
+          if(CharsCreatedTime[(int)previousChars[deletePoint]] + 100 <= millis() ){
             
             stopSolenoidByChar((int)previousChars[deletePoint]);
             CharsCreatedTime[(int)previousChars[deletePoint]] = 0;
@@ -67,7 +62,7 @@ void loop ()
        while(1){
         currentTime = millis(); // 현재 시간 계속 불러옴
         
-        if(currentTime - previousTime == (int)tempo/2 && resetSolenoid){ // 현재시각 - 오르골 시작시간 이템포의 1/2가 되면 솔레노이드 초기화 한번만 실행을 위한 resetSolenoid
+        if(currentTime - previousTime == (int)tempo/3 && resetSolenoid){ // 현재시각 - 오르골 시작시간 이템포의 1/3가 되면 솔레노이드 초기화 한번만 실행을 위한 resetSolenoid
 
           for(int deletePoint = 0; deletePoint < previousChars.length(); deletePoint++){
             
@@ -194,7 +189,7 @@ void BTRate(){
     }else{
       
       
-        if(tempoGet){ // 템포를 받음
+        if(tempoGet){ // 템포를 받ㅇ므
                 
           if(data == ';'){
                         
