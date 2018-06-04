@@ -2,20 +2,20 @@
 #include <Adafruit_PWMServoDriver.h>
 #include "FastLED.h"
 
-Adafruit_PWMServoDriver oddServoModule= Adafruit_PWMServoDriver(0x41); 
-Adafruit_PWMServoDriver evenServoModule = Adafruit_PWMServoDriver(); 
+Adafruit_PWMServoDriver oddServoModule= Adafruit_PWMServoDriver(0x41);  // odd servo
+Adafruit_PWMServoDriver evenServoModule = Adafruit_PWMServoDriver();  // even servo
 
 #define MIN_PULSE_WIDTH       650
 #define MAX_PULSE_WIDTH       2350
-#define DEFAULT_PULSE_WIDTH   1500
-#define FREQUENCY             50
-#define topAngle              110
-#define bottomAngle           70
+#define DEFAULT_PULSE_WIDTH   1500 
+#define FREQUENCY             50 // pwm setting
+#define topAngle              110 // servos top angle
+#define bottomAngle           70 // servos bottom angle
 #define NUM_LEDS              20
-#define NUM_STRIPS            8
+#define NUM_STRIPS            8 // leds 8*20 160leds used
 
 
-unsigned long previousTime =0; // 오르골 연주시 필요한 시간
+unsigned long previousTime = 0 ; // 오르골 연주시 필요한 시간
 unsigned long currentTime = 0; // 연주중 필요한 시간
 float tempo = 0; // 동작에 맞는 템포
 String tempoString = "";
@@ -26,6 +26,70 @@ String moveString = ""; // 블루투스로 동작 문자열 한번에 받기
 int servoCount[30]; //서보모터 위치 초기화
 CRGB leds[NUM_STRIPS][NUM_LEDS];
 int ledTempArr[8][3];
+
+int ledColorSet[60][3] = {
+ {255, 0, 0},
+ {255, 69, 0},
+ {255, 165, 0},
+ {178, 34, 34},
+ {255, 20, 147},
+ {255, 105, 180},
+ {255, 192, 203},
+ {210, 105, 30},
+ {199, 21, 133},
+ {238, 232, 170},
+ {218, 165, 32},
+ {255, 215, 0},
+ {255, 255, 224},
+ {173, 255, 47},
+ {127, 255, 0},
+ {152, 251, 152},
+ {0, 250, 154},
+ {0, 255, 255},
+ {224, 255, 255},
+ {175, 238, 238},
+ {255, 160, 122},
+ {127, 255, 212},
+ {64, 224, 208},
+ {0, 206, 209},
+ {100, 149, 237},
+ {173, 216, 230},
+ {135, 206, 250},
+ {240, 248, 255},
+ {0, 204, 255},
+ {0, 191, 255},
+ {30, 144, 255},
+ {65, 105, 225},
+ {106, 90, 205},
+ {123, 104, 238},
+ {138, 43, 226},
+ {147, 112, 219},
+ {148, 0, 211},
+ {218, 112, 214},
+ {199, 21, 133},
+ {219, 112, 147},
+ {255, 0, 255},
+ {216, 191, 216},
+ {238, 130, 238},
+ {221, 160, 221},
+ {211, 211, 211},
+ {255, 250, 240},
+ {255, 222, 173},
+ {237, 164, 61},
+ {255, 250, 205},
+ {245, 222, 179},
+ {245, 245, 220},
+ {178, 34, 34},
+ {255, 127, 80},
+ {165, 42, 42},
+ {255, 102, 0},
+ {238, 232, 170},
+ {173, 255, 47},
+ {0, 250, 154},
+ {255, 102, 0},
+ {0, 206, 209},
+ 
+};
 
 void setup() 
 {
@@ -64,19 +128,20 @@ void loop() {
   if(Serial1.available()){ // 블루투스 값 있을시
       BTRate(); // 블루투스 값 전부 받는 함수      
   }
-  if(oneStart){                                 // 오르골 연주
+  if(oneStart){ // 오르골 연주
     
     previousTime = millis();
 
     for(int readPoint = 0; readPoint < moveString.length(); readPoint++){
-      if(moveString[readPoint] == 'r'){ // 딜레이
+      if(moveString[readPoint] == 'r'){ // 딜레이 발생(박자)
 
         
-      if(tempo <= 250){
+      if(tempo <= 250){  //FastLED.show()라는 함수가 딜레이를 가지고 있음, 조금 더 효율적인 방법을 찾고있음.
+        // led set 속도가 템포에 영향을 주지 않도록 조정
         for(int i=0; i<NUM_LEDS; i++){
           for(int j=0; j<NUM_STRIPS; j++){
             if(ledTempArr[j] != NULL){
-              ledSetColor(j,i,ledTempArr[j][0],ledTempArr[j][1],ledTempArr[j][2]);
+              ledSetColor(j,i,ledTempArr[j][1],ledTempArr[j][0],ledTempArr[j][2]);
             }
           }
           FastLED.show();
@@ -85,8 +150,8 @@ void loop() {
         for(int i=0; i<=NUM_LEDS; i+=2){
           for(int j=0; j<NUM_STRIPS; j++){
             if(ledTempArr[j] != NULL){
-              ledSetColor(j,i,ledTempArr[j][0],ledTempArr[j][1],ledTempArr[j][2]);
-              ledSetColor(j,i+1,ledTempArr[j][0],ledTempArr[j][1],ledTempArr[j][2]);
+              ledSetColor(j,i,ledTempArr[j][1],ledTempArr[j][0],ledTempArr[j][2]);
+              ledSetColor(j,i+1,ledTempArr[j][1],ledTempArr[j][0],ledTempArr[j][2]);
             }
           }
           FastLED.show();
@@ -107,10 +172,11 @@ void loop() {
         
       }else{ // 모터로 오르골 연주
         moveServoMotor((int)moveString[readPoint]);
-        int ledStripTemp =random(64)%8;
-        ledTempArr[ledStripTemp][0] = random(16)*random(16);
-        ledTempArr[ledStripTemp][1] = random(16)*random(16);
-        ledTempArr[ledStripTemp][2] = random(16)*random(16);        
+        int ledStripTemp =random(65)%8;
+        int ledColorSetTemp = random(60);
+        ledTempArr[ledStripTemp][0] = ledColorSet[ledColorSetTemp][0];
+        ledTempArr[ledStripTemp][1] = ledColorSet[ledColorSetTemp][1];
+        ledTempArr[ledStripTemp][2] = ledColorSet[ledColorSetTemp][2];    
       }
 
       
@@ -213,7 +279,9 @@ void BTRate(){
               ledSetColor(j,i,ledTempArr[j][0],ledTempArr[j][1],ledTempArr[j][2]);
             }
           }
-          FastLED.show();
+          if(i == 19){
+            FastLED.show(); 
+          }
         }
       }
     
