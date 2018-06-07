@@ -24,10 +24,10 @@ boolean tempoGet = true;
 boolean realTimePlay = false;
 String moveString = ""; // 블루투스로 동작 문자열 한번에 받기
 int servoCount[30]; //서보모터 위치 초기화
-CRGB leds[NUM_STRIPS][NUM_LEDS];
+CRGB leds[NUM_STRIPS][NUM_LEDS]; // led 객체 생성
 int ledTempArr[8][3];
 
-int ledColorSet[60][3] = {
+int ledColorSet[60][3] = { // led 색 데이터
  {255, 0, 0},
  {255, 69, 0},
  {255, 165, 0},
@@ -159,10 +159,11 @@ void loop() {
         
       }
       
-        while(1){
+        while(1){// 박자에 맞는 시간 delay
           currentTime = millis();
 
-          if(currentTime - previousTime >=tempo){
+          if(currentTime - previousTime >=tempo){ 
+            
             previousTime = currentTime;
             int ledTempArr[8][3];
             break;
@@ -197,7 +198,7 @@ void loop() {
 
 
 int pulseToAngle(int angle)
-{
+{ // 펄스값을 각도로 편하게 쓰기 위함
   int pulse_wide, analog_value;
   pulse_wide   = map(angle, 0, 180, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
   analog_value = int(float(pulse_wide) / 1000000 * FREQUENCY * 4096);
@@ -205,7 +206,7 @@ int pulseToAngle(int angle)
 }
 
 
-void moveServoMotor(int moveChar){ // 모터 동작
+void moveServoMotor(int moveChar){ // 문자에 맞는 모터 동작 함수
   int moveServoPwmPin;
   switch(moveChar){
     case 65: moveServoPwmPin = 0;
@@ -261,28 +262,51 @@ void BTRate(){
 
   
   if(realTimePlay){
+    while(1){
+      if(Serial1.available()){
+        char data = (char)Serial1.read();
+          if(data ==')'){
+              for(int i=0; i<NUM_STRIPS;i++){ // LED 불 전부 끄기
+                  for(int j=0; j<NUM_LEDS;j++){
+                      ledSetColor(i,j,0,0,0);
+                       FastLED.show();
+                  }
+                }
+            break;
+            
+          }else{
+            moveServoMotor((int)data);
+            for(int i=0; i<6;i++){
+              ledSetColor(random(8),random(18)+2,random(256),random(256),random(256));
+            }
+            FastLED.show();
+            
+          }
+      }
+        
+      for(int i =0; i<NUM_STRIPS;i++){
+        for(int j=0; j< NUM_LEDS;j++){
+          if(leds[i][j].r > 1){
+            leds[i][j].r = leds[i][j].r * (0.99);
+          }
+          if(leds[i][j].g > 1){
+            leds[i][j].g = leds[i][j].g * (0.99);
+          }
+          if(leds[i][j].b > 1){
+            leds[i][j].b = leds[i][j].b * (0.99);
+          } 
+        }
+      }
+      FastLED.show();
+      
+    }
   
       if(data == ')'){
         
         realTimePlay = false;
         
       }else{
-        moveServoMotor((int)data);
 
-        int ledStripTemp =random(64)%8;
-        ledTempArr[ledStripTemp][0] = random(16)*random(16);
-        ledTempArr[ledStripTemp][1] = random(16)*random(16);
-        ledTempArr[ledStripTemp][2] = random(16)*random(16);
-        for(int i=0; i<NUM_LEDS; i++){
-          for(int j=0; j<NUM_STRIPS; j++){
-            if(ledTempArr[j] != NULL){
-              ledSetColor(j,i,ledTempArr[j][0],ledTempArr[j][1],ledTempArr[j][2]);
-            }
-          }
-          if(i == 19){
-            FastLED.show(); 
-          }
-        }
       }
     
   }else{                                                                               
