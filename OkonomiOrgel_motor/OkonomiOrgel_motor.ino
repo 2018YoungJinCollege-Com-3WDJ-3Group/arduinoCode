@@ -7,7 +7,6 @@ Adafruit_PWMServoDriver evenServoModule = Adafruit_PWMServoDriver();  // even se
 
 #define MIN_PULSE_WIDTH       650
 #define MAX_PULSE_WIDTH       2350
-#define DEFAULT_PULSE_WIDTH   1500 
 #define FREQUENCY             50 // pwm setting
 #define topAngle              110 // servos top angle
 #define bottomAngle           70 // servos bottom angle
@@ -88,7 +87,6 @@ int ledColorSet[60][3] = { // led 색 데이터
  {0, 250, 154},
  {255, 102, 0},
  {0, 206, 209},
- 
 };
 
 void setup() 
@@ -113,9 +111,11 @@ void setup()
     evenServoModule.setPWM(i,0,pulseToAngle(110));
     delay(100);
   }
+  
   for(int i =0; i<30; i++){ // 각 서보모터의 빈도수 초기화
     servoCount[i] = 0;
   }
+  
   for(int i=0; i<NUM_STRIPS;i++){ // LED 불 전부 끄기
     for(int j=0; j<NUM_LEDS;j++){
         ledSetColor(i,j,0,0,0);
@@ -125,45 +125,53 @@ void setup()
   
 }
 void loop() {
+  
   if(Serial1.available()){ // 블루투스 값 있을시
       BTRate(); // 블루투스 값 전부 받는 함수      
   }
+
+  
   if(oneStart){ // 오르골 연주
     
-    previousTime = millis();
+    previousTime = millis(); // 아두이노가 실행된 후 시간
 
     for(int readPoint = 0; readPoint < moveString.length(); readPoint++){
-      if(moveString[readPoint] == 'r'){ // 딜레이 발생(박자)
-
-        
-      if(tempo <= 250){  //FastLED.show()라는 함수가 딜레이를 가지고 있음, 조금 더 효율적인 방법을 찾고있음.
+      if(moveString[readPoint] == 'r'){ // 딜레이 발생(박자) 
+             
+      if(tempo <= 250){  //FastLED.show()라는 함수가 딜레이를 가짐
         // led set 속도가 템포에 영향을 주지 않도록 조정
         for(int i=0; i<NUM_LEDS; i++){
+          
           for(int j=0; j<NUM_STRIPS; j++){
             if(ledTempArr[j] != NULL){
-              ledSetColor(j,i,ledTempArr[j][1],ledTempArr[j][0],ledTempArr[j][2]);
+              ledSetColor(j,i,ledTempArr[j][1],ledTempArr[j][0],ledTempArr[j][2]); //랜덤한 led 스트립 빛 나오게
             }
+            
           }
+          
           FastLED.show();
+          
         }
-      }else{
+      }else{ // 템포에 따른 구분
+        
         for(int i=0; i<=NUM_LEDS; i+=2){
+          
           for(int j=0; j<NUM_STRIPS; j++){
             if(ledTempArr[j] != NULL){
               ledSetColor(j,i,ledTempArr[j][1],ledTempArr[j][0],ledTempArr[j][2]);
               ledSetColor(j,i+1,ledTempArr[j][1],ledTempArr[j][0],ledTempArr[j][2]);
             }
           }
+          
           FastLED.show();
         }
         
       }
       
-        while(1){// 박자에 맞는 시간 delay
+        while(1){// 박자에 맞는 시간 쉬어줌
           currentTime = millis();
 
           if(currentTime - previousTime >=tempo){ 
-            
             previousTime = currentTime;
             int ledTempArr[8][3];
             break;
@@ -173,7 +181,7 @@ void loop() {
         
       }else{ // 모터로 오르골 연주
         moveServoMotor((int)moveString[readPoint]);
-        int ledStripTemp =random(65)%8;
+        int ledStripTemp =random(64)%8;
         int ledColorSetTemp = random(60);
         ledTempArr[ledStripTemp][0] = ledColorSet[ledColorSetTemp][0];
         ledTempArr[ledStripTemp][1] = ledColorSet[ledColorSetTemp][1];
@@ -187,13 +195,16 @@ void loop() {
   tempoGet = true;
   tempo = 0;
   tempoString = "";
+  
   for(int i=0; i<NUM_STRIPS;i++){ // LED 불 전부 끄기
     for(int j=0; j<NUM_LEDS;j++){
         ledSetColor(i,j,0,0,0);
-         FastLED.show();
     }
+    delay(100);
+    FastLED.show();
   }
 }
+
 }
 
 
@@ -207,7 +218,9 @@ int pulseToAngle(int angle)
 
 
 void moveServoMotor(int moveChar){ // 문자에 맞는 모터 동작 함수
+  
   int moveServoPwmPin;
+  
   switch(moveChar){
     case 65: moveServoPwmPin = 0;
     break;
@@ -229,8 +242,10 @@ void moveServoMotor(int moveChar){ // 문자에 맞는 모터 동작 함수
     break;
     default: moveServoPwmPin = moveChar - 74;
     break;
+    
   }
-  if(moveServoPwmPin%2 == 1){
+  
+  if(moveServoPwmPin%2 == 1){ // 맞는 모터 동작
     
     if(servoCount[moveServoPwmPin] % 2 == 0 ){
       oddServoModule.setPWM((int)(moveServoPwmPin/2),0,pulseToAngle(bottomAngle));
@@ -258,10 +273,13 @@ void BTRate(){
     
     realTimePlay = true;
     
+  }if(data ==')'){
+    data = '';
   }
 
   
   if(realTimePlay){
+    
     while(1){
       if(Serial1.available()){
         char data = (char)Serial1.read();
@@ -272,8 +290,8 @@ void BTRate(){
                        FastLED.show();
                   }
                 }
+            realTimePlay = false;
             break;
-            
           }else{
             moveServoMotor((int)data);
             for(int i=0; i<6;i++){
@@ -299,20 +317,23 @@ void BTRate(){
       }
       FastLED.show();
       
-    }
+    } 
+
   
-      if(data == ')'){
+      if(data == ')'){ // 리얼타임 플레이 끝내기
         
         realTimePlay = false;
+        data = '';
         
       }else{
 
       }
     
-  }else{                                                                               
+  }else{                                                                          
 
     
        if(tempoGet){
+        
         if(data == ';'){
           tempoGet = false;
           if(tempoString.toInt() < 60 || tempoString.toInt() > 400){ //템포의 최소값과 최대값 지정
@@ -332,7 +353,7 @@ void BTRate(){
     
   }
 }
-void ledSetColor(int strip,int led, int red, int green, int blue){
+void ledSetColor(int strip,int led, int red, int green, int blue){ // LED 색 설정 함수
   leds[strip][led].r = red;
   leds[strip][led].g = green;
   leds[strip][led].b = blue;
