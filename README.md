@@ -44,11 +44,11 @@ Bluetoothデータの規約
 | ㇾ | g | 103 |
 | ミ | i | 105 |
 
-motorバージョン（１）と既存のプロトタイプバージョン（２）があります。
+<h2>motorバージョン（１）と既存のプロトタイプバージョン（２）があります。</h2>
 
 （1）
 
-サーボモーターとLEDを使ってカスタムオルゴールを作りました。
+<h2>サーボモーターとLEDを使ってカスタムオルゴールを作りました。</h2>
 ![Alt text](/readme/make2.jpg)
 ![Alt text](/readme/make1.jpg)
 ![Alt text](/readme/motor2.jpg)
@@ -73,15 +73,16 @@ Function の説明
 
 ![Alt text](/readme/12.jpg)
 
-Function の説明
+<h3>Function の説明</h3>
+
 | function        |      Description      | returnValue  |
-| ------------- |:-------------:| -----:|
+| --------------- |:------------------:| ---------:|
 | setup()      | RELAY、Bluetoothを初期化します | NULL |
 | loop()      | 文字列による演奏ができます。     |   NULL |
 | moveSolenoidByChar(int) | パラメータに合わせるRELAYがONされオルゴール音を演奏します。 |　NULL |
 | stopSolenoidByChar(int) | パラメータに合わせるRELAYがOFFされます。| NULL |
-| allSolenoidStop() | すべてのRELAYがOFFされます | 103 |
-| BTRate() | モバイルからのBluetoothを文字列をゲットします | 105 |
+| allSolenoidStop() | すべてのRELAYがOFFされます | NULL |
+| BTRate() | モバイルからのBluetoothを文字列をゲットします | NULL |
 
 動画：<https://www.youtube.com/watch?v=F9jokGUb19k#t=9m05s>
 
