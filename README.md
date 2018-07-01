@@ -2,7 +2,6 @@
 
 webSite : <http://52.78.122.145/>
 
-<hr>
 ハードウェアパーツ　：　Arduino, Bluetooth module, LED Strip, 木材、鉄材、オルゴール、釣り糸など
 
 ![Alt text](/readme/nagare.png)
