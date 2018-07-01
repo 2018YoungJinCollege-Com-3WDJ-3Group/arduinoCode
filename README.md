@@ -50,11 +50,16 @@ Bluetoothデータの規約
 
 （1）
 
-<h2>サーボモーターとLEDを使ってカスタムオルゴールを作りました。</h2>
+サーボモーターとLEDを使ってカスタムオルゴールを作りました
+
 ![Alt text](/readme/make2.jpg)
+
 ![Alt text](/readme/make1.jpg)
+
 ![Alt text](/readme/motor2.jpg)
+
 ![Alt text](/readme/motor1.jpg)
+
 
 PWMservoDriverを使ってArduino Digital Pin2つで全部操作することができます。
 
