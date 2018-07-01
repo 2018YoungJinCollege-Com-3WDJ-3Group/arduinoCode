@@ -1,6 +1,8 @@
 <h2>2018永進専門大学 コンピューター情報系列 ウェブデータベース専攻 3年生 3チーム マイグミ 卒業プロジェクト</h2>
+
 webSite : <http://52.78.122.145/>
-<hr />
+
+<hr>
 ハードウェアパーツ　：　Arduino, Bluetooth module, LED Strip, 木材、鉄材、オルゴール、釣り糸など
 
 ![Alt text](/readme/nagare.png)
@@ -83,6 +85,7 @@ Function の説明
 | stopSolenoidByChar(int) | パラメータに合わせるRELAYがOFFされます。| NULL |
 | allSolenoidStop() | すべてのRELAYがOFFされます | NULL |
 | BTRate() | モバイルからのBluetoothを文字列をゲットします | NULL |
+
 
 動画：<https://www.youtube.com/watch?v=F9jokGUb19k#t=9m05s>
 
