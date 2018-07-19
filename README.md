@@ -59,6 +59,13 @@ Bluetoothデータの規約
 
 ![Alt text](/readme/motor1.jpg)
 
+原理について説明いたします。
+
+![Alt text](/readme/genri1.png)
+このような仕組みで
+![Alt text](/readme/genri2.gif)
+このように動作します。
+そのオルゴールを弾く装置の動作範囲以内にオルゴールの鍵盤を置いて、装置が鍵盤を打ったら、音を出して、演奏することができます。
 
 PWMservoDriverを使ってArduino Digital Pin2つで全部操作することができます。
 
